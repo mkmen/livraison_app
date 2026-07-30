@@ -28,6 +28,11 @@ class CourseStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void supprimerCourse(String id) {
+    _courses.removeWhere((c) => c.id == id);
+    notifyListeners();
+  }
+
   /// À appeler après avoir modifié un CourseModel récupéré via getById,
   /// pour prévenir les écrans qui écoutent le store.
   void notifierChangement() {

@@ -25,6 +25,29 @@ class HomeView extends StatelessWidget {
     context.push(AppRoutes.detailsPath(course.id));
   }
 
+  Future<bool> _confirmerSuppression(BuildContext context, CourseModel course) async {
+    final confirme = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Supprimer la course ?'),
+        content: Text(
+          'La course de "${course.client}" et ses éventuelles signatures seront définitivement supprimées.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton.tonal(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Supprimer'),
+          ),
+        ],
+      ),
+    );
+    return confirme ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,9 +67,25 @@ class HomeView extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (context, index) {
               final course = courses[index];
-              return CourseCard(
-                course: course,
-                onTap: () => _ouvrirCourse(context, course),
+              return Dismissible(
+                key: ValueKey(course.id),
+                direction: DismissDirection.endToStart,
+                confirmDismiss: (_) => _confirmerSuppression(context, course),
+                onDismissed: (_) => CourseStore.instance.supprimerCourse(course.id),
+                background: Container(
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.delete_outline, color: Colors.white),
+                ),
+                child: CourseCard(
+                  course: course,
+                  onTap: () => _ouvrirCourse(context, course),
+                ),
               );
             },
           );

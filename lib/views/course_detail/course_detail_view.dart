@@ -109,6 +109,34 @@ class _CourseDetailViewState extends State<CourseDetailView> {
     Navigator.of(context).pop();
   }
 
+  Future<void> _supprimer() async {
+    final course = _course;
+    final confirme = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Supprimer la course ?'),
+        content: Text(
+          'La course de "${course.client}" et ses éventuelles signatures seront définitivement supprimées.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton.tonal(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Supprimer'),
+          ),
+        ],
+      ),
+    );
+    if (confirme != true) return;
+
+    CourseStore.instance.supprimerCourse(widget.courseId);
+    if (!mounted) return;
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     final course = _course;
@@ -116,6 +144,13 @@ class _CourseDetailViewState extends State<CourseDetailView> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Course - ${course.client}'),
+        actions: [
+          IconButton(
+            onPressed: _supprimer,
+            icon: const Icon(Icons.delete_outline),
+            tooltip: 'Supprimer la course',
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
