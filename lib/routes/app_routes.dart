@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../views/course_detail/course_detail_view.dart';
+import '../views/historique/historique_detail_view.dart';
+import '../views/historique/historique_view.dart';
 import '../views/home/home_view.dart';
 
 /// Centralise les chemins de routes et la config du router.
@@ -10,11 +12,15 @@ class AppRoutes {
 
   static const String home = '/';
   static const String details = '/details/:id';
+  static const String historique = '/historique';
   static const String search = '/search';
   static const String profile = '/profile';
 
   /// Helper pour construire l'URL de la route details avec un id.
   static String detailsPath(String id) => '/details/$id';
+
+  /// Helper pour construire l'URL du détail d'une course dans l'historique.
+  static String historiqueDetailsPath(String id) => '/historique/details/$id';
 
   static final GoRouter router = GoRouter(
     initialLocation: home,
@@ -47,7 +53,27 @@ class AppRoutes {
               ),
             ],
           ),
-          // Onglet 2 : Recherche
+          // Onglet 2 : Historique (+ sa route de détails imbriquée)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: historique,
+                name: 'historique',
+                builder: (context, state) => const HistoriqueView(),
+                routes: [
+                  GoRoute(
+                    path: 'details/:id', // -> /historique/details/:id
+                    name: 'historique-details',
+                    builder: (context, state) {
+                      final id = state.pathParameters['id']!;
+                      return HistoriqueDetailView(courseId: id);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          // Onglet 3 : Recherche
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -57,7 +83,7 @@ class AppRoutes {
               ),
             ],
           ),
-          // Onglet 3 : Profil
+          // Onglet 4 : Profil
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -77,7 +103,7 @@ class AppRoutes {
 }
 
 /// Scaffold partagé qui affiche la BottomNavigationBar et l'écran
-/// courant fourni par le navigationShell (une des 3 branches ci-dessus).
+/// courant fourni par le navigationShell (une des branches ci-dessus).
 class _ScaffoldWithNavBar extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
@@ -98,6 +124,7 @@ class _ScaffoldWithNavBar extends StatelessWidget {
         },
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: 'Accueil'),
+          NavigationDestination(icon: Icon(Icons.history), label: 'Historique'),
           NavigationDestination(icon: Icon(Icons.search), label: 'Recherche'),
           NavigationDestination(icon: Icon(Icons.person), label: 'Profil'),
         ],
