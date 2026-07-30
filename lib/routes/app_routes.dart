@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../views/course_detail/course_detail_view.dart';
+import '../views/home/home_view.dart';
+
 /// Centralise les chemins de routes et la config du router.
 class AppRoutes {
   AppRoutes._();
@@ -30,14 +33,14 @@ class AppRoutes {
               GoRoute(
                 path: home,
                 name: 'home',
-                builder: (context, state) => const _HomeScreen(),
+                builder: (context, state) => const HomeView(),
                 routes: [
                   GoRoute(
                     path: 'details/:id', // -> /details/:id, imbriqué sous /
                     name: 'details',
                     builder: (context, state) {
                       final id = state.pathParameters['id']!;
-                      return _DetailsScreen(id: id);
+                      return CourseDetailView(courseId: id);
                     },
                   ),
                 ],
@@ -104,40 +107,9 @@ class _ScaffoldWithNavBar extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------
-// Écrans temporaires pour valider que la navigation fonctionne.
-// À remplacer par tes vrais écrans dans lib/screens/, puis mets à jour
-// les `builder:` ci-dessus pour pointer vers HomeScreen() / DetailsScreen().
+// Écrans temporaires (Recherche / Profil pas encore développés).
+// À remplacer plus tard par les vraies vues dans lib/views/.
 // -----------------------------------------------------------------------
-
-class _HomeScreen extends StatelessWidget {
-  const _HomeScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Accueil')),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => context.push(AppRoutes.detailsPath('42')),
-          child: const Text('Voir les détails'),
-        ),
-      ),
-    );
-  }
-}
-
-class _DetailsScreen extends StatelessWidget {
-  final String id;
-  const _DetailsScreen({required this.id});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Détails')),
-      body: Center(child: Text("Détails de l'élément $id")),
-    );
-  }
-}
 
 class _SearchScreen extends StatelessWidget {
   const _SearchScreen();
