@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../views/course_detail/course_detail_view.dart';
+import '../views/facturation/facturation_view.dart';
+import '../views/facturation/facture_client_view.dart';
+import '../views/facturation/montants_courses_view.dart';
+import '../views/facturation/recap_mensuel_view.dart';
 import '../views/historique/historique_detail_view.dart';
 import '../views/historique/historique_view.dart';
 import '../views/home/home_view.dart';
@@ -13,7 +17,10 @@ class AppRoutes {
   static const String home = '/';
   static const String details = '/details/:id';
   static const String historique = '/historique';
-  static const String search = '/search';
+  static const String facturation = '/facturation';
+  static const String facturationMontants = '/facturation/montants';
+  static const String facturationFactureClient = '/facturation/facture-client';
+  static const String facturationRecap = '/facturation/recap';
   static const String profile = '/profile';
 
   /// Helper pour construire l'URL de la route details avec un id.
@@ -73,13 +80,30 @@ class AppRoutes {
               ),
             ],
           ),
-          // Onglet 3 : Recherche
+          // Onglet 3 : Facturation (écran menu + 3 routes imbriquées)
           StatefulShellBranch(
             routes: [
               GoRoute(
-                path: search,
-                name: 'search',
-                builder: (context, state) => const _SearchScreen(),
+                path: facturation,
+                name: 'facturation',
+                builder: (context, state) => const FacturationView(),
+                routes: [
+                  GoRoute(
+                    path: 'montants', // -> /facturation/montants
+                    name: 'facturation-montants',
+                    builder: (context, state) => const MontantsCoursesView(),
+                  ),
+                  GoRoute(
+                    path: 'facture-client', // -> /facturation/facture-client
+                    name: 'facturation-facture-client',
+                    builder: (context, state) => const FactureClientView(),
+                  ),
+                  GoRoute(
+                    path: 'recap', // -> /facturation/recap
+                    name: 'facturation-recap',
+                    builder: (context, state) => const RecapMensuelView(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -125,7 +149,7 @@ class _ScaffoldWithNavBar extends StatelessWidget {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: 'Accueil'),
           NavigationDestination(icon: Icon(Icons.history), label: 'Historique'),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Recherche'),
+          NavigationDestination(icon: Icon(Icons.euro), label: 'Facturation'),
           NavigationDestination(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),
@@ -134,21 +158,9 @@ class _ScaffoldWithNavBar extends StatelessWidget {
 }
 
 // -----------------------------------------------------------------------
-// Écrans temporaires (Recherche / Profil pas encore développés).
-// À remplacer plus tard par les vraies vues dans lib/views/.
+// Écran temporaire (Profil pas encore développé).
+// À remplacer plus tard par la vraie vue dans lib/views/.
 // -----------------------------------------------------------------------
-
-class _SearchScreen extends StatelessWidget {
-  const _SearchScreen();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Recherche')),
-      body: const Center(child: Text('Écran de recherche')),
-    );
-  }
-}
 
 class _ProfileScreen extends StatelessWidget {
   const _ProfileScreen();

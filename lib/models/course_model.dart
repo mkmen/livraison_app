@@ -46,6 +46,12 @@ class CourseModel {
   SignatureInfo? signatureDestinataire;
   CourseStatus status;
 
+  /// Montant facturé pour cette course, renseigné depuis l'onglet
+  /// Facturation (voir MontantsCoursesView). Null tant qu'il n'a pas
+  /// été saisi ; une course sans montant n'est pas incluse dans les
+  /// factures générées.
+  double? montant;
+
   CourseModel({
     required this.id,
     required this.client,
@@ -53,6 +59,7 @@ class CourseModel {
     required this.adresseDestinataire,
     DateTime? dateCreation,
     this.status = CourseStatus.declaree,
+    this.montant,
   }) : dateCreation = dateCreation ?? DateTime.now();
 
   bool get estPriseEnCharge => signatureExpediteur != null;
@@ -61,4 +68,8 @@ class CourseModel {
   /// Une course peut être clôturée une fois les deux signatures obtenues.
   bool get peutEtreCloturee =>
       estPriseEnCharge && estLivree && status != CourseStatus.cloturee;
+
+  /// Un montant a été renseigné : la course peut être incluse dans
+  /// une facture.
+  bool get estFacturable => montant != null;
 }
